@@ -2,36 +2,25 @@
 const props = defineProps({
   columns: Array,
   data: Array,
-  onDelete: {
-    type: Function
-  }
+  onDelete: Function,
+  onEdit: Function
 })
 
-const deleteUser = (id: number) => {
-  if (props.onDelete) {
-    props.onDelete(id)
+const handleAction = (record: any, action: string) => {
+  if (props.onDelete && action === 'DELETE') {
+    props.onDelete(record.id)
+  }
+
+  if (props.onEdit && action === 'EDIT') {
+    props.onEdit(record)
   }
 }
 </script>
 
 <template>
   <a-table :columns="columns" :data-source="data">
-    <template #headerCell="{ column }">
-      <template v-if="column.key === 'name'">
-        <span>
-          <smile-outlined />
-          Name
-        </span>
-      </template>
-    </template>
-
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'name'">
-        <a>
-          {{ record.name }}
-        </a>
-      </template>
-      <template v-else-if="column.key === 'bloodGroup'">
+      <template v-if="column.key === 'bloodGroup'">
         <span>
           <a-tag>
             {{ record.bloodGroup.toUpperCase() }}
@@ -40,14 +29,8 @@ const deleteUser = (id: number) => {
       </template>
       <template v-else-if="column.key === 'action'">
         <span>
-          <a>Invite 一 {{ record.name }}</a>
-          <a-divider type="vertical" />
-          <a @click="deleteUser(record.id)">Delete</a>
-          <a-divider type="vertical" />
-          <a class="ant-dropdown-link">
-            More actions
-            <down-outlined />
-          </a>
+          <a @click="handleAction(record, `EDIT`)">Edit 一</a>
+          <a @click="handleAction(record, `DELETE`)">Delete</a>
         </span>
       </template>
     </template>
